@@ -35,5 +35,25 @@ func GetPosts(ctx *gin.Context) {
 }
 
 func GetSinglePost(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{})
+	db := server.App().DB
+	res, err := db.Query("SELECT * from posts where id=?", ctx.Param("id"))
+	if err != nil {
+		panic(err.Error())
+	}
+	if res.Next() {
+		var post Post
+		err = res.Scan(&post.Id, &post.Title, &post.Body, &post.Author, &post.CreatedAt)
+		if err != nil {
+			panic(err.Error())
+		}
+		ctx.JSON(http.StatusOK, gin.H{
+			"status":   http.StatusOK,
+			"response": post,
+		})
+	} else {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"status":   http.StatusNotFound,
+			"response": "No data found",
+		})
+	}
 }

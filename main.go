@@ -19,5 +19,6 @@ func init() {
 func main() {
 	app := server.App().Router
 	app.GET("/posts", routes.GetPosts)
+	app.GET("/posts/:id", routes.GetSinglePost)
 	app.Run(":8081")
 }
